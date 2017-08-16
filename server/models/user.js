@@ -38,6 +38,14 @@ userSchema.pre('save', function (next) {
 
 });
 
+userSchema.methods.comparePassword = function (candidatePassword, callback ) {
+    bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
+          if (err) {return callback(err);}
+
+          callback(null, isMatch);
+    })
+};
+
 //(2) Create the model class which represents all USers
 const ModelClass = mongoose.model('user', userSchema);
 

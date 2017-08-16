@@ -1,5 +1,7 @@
 //Adding a route, user can visit
 const Authentication = require('./controllers/authentication');
+const passportService = require('./services/passport');
+const passport = require('passport');
 
 
 //EXAMPLE
@@ -18,7 +20,18 @@ const Authentication = require('./controllers/authentication');
 //     });
 // };
 
+//Creating a middleware between passport and particular route
+const requireAuth = passport.authenticate('jwt', {session: false});
+const requireSignin = passport.authenticate('local',{session:false });
 
-module.exports =function (app) {
+module.exports = function (app) {
+
+    //If anyone gets to the root route first send them to requireAuth
+    // and then send them to the request handler
+    app.get('/', requireAuth, function (req, res) {
+        res.send({hi: 'there'});
+    } );
+
+    app.post('/signin',requireSignin, Authentication.signin);
     app.post('/signup', Authentication.signup);
 };
